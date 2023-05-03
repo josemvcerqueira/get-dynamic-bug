@@ -11,14 +11,12 @@ const provider = new JsonRpcProvider(testnetConnection);
 const STORAGE_OBJECT_ID =
   '0x0b7fe6779f5aa718a47279399a37a3a2f3239b69879518d6d51b592834d5aa56';
 
-const POOLS_BAG_OBJECT_ID =
-  '0x7a8a751c07a52426ad6dcb0173b44ab9fa32bf267af545fac09930062ae0af40';
-
 interface GetAllDynamicFieldsInternalArgs {
   cursor: null | string;
   nextPage: boolean;
   maxLength: number;
   data: DynamicFieldPage['data'];
+  parentId: string;
 }
 
 const getAllDynamicFieldsInternal = async ({
@@ -26,9 +24,10 @@ const getAllDynamicFieldsInternal = async ({
   nextPage,
   maxLength,
   cursor,
+  parentId,
 }: GetAllDynamicFieldsInternalArgs): Promise<DynamicFieldPage['data']> => {
   const newData = await provider.getDynamicFields({
-    parentId: POOLS_BAG_OBJECT_ID,
+    parentId,
     cursor: cursor,
   });
 
@@ -43,6 +42,7 @@ const getAllDynamicFieldsInternal = async ({
     nextPage: newData.hasNextPage,
     cursor: newData.nextCursor,
     maxLength,
+    parentId,
   });
 };
 
@@ -56,6 +56,7 @@ const getAllDynamicFields = async (parentId: string, maxLength: number) => {
     nextPage: data.hasNextPage,
     cursor: data.nextCursor,
     maxLength,
+    parentId,
   });
 };
 
