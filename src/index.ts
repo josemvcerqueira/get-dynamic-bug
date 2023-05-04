@@ -31,11 +31,11 @@ const getAllDynamicFieldsInternal = async ({
     cursor: cursor,
   });
 
+  console.log('getDynamicFields called');
+
   const nextData = data.concat(newData.data);
 
-  console.log('hasNextPage is always true', nextPage);
-
-  if (nextData.length > maxLength || !nextPage) return nextData;
+  if (!nextPage) return nextData;
 
   return getAllDynamicFieldsInternal({
     data: nextData,
@@ -50,6 +50,8 @@ const getAllDynamicFields = async (parentId: string, maxLength: number) => {
   const data = await provider.getDynamicFields({
     parentId,
   });
+
+  console.log('getDynamicFields called');
 
   return getAllDynamicFieldsInternal({
     data: data.data,
@@ -83,7 +85,7 @@ const start = async () => {
 
   console.log(
     'We fetched an array with unique items of: ',
-    new Set(...data.map(x => x.objectId)).size,
+    new Set(data.map(x => x.objectId)).size,
   );
 };
 
