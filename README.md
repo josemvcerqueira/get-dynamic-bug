@@ -22,7 +22,6 @@ getDynamicFields called
 getDynamicFields called
 getDynamicFields called
 getDynamicFields called
-getDynamicFields called
-We fetched an array with a length of:  203
+We fetched an array with a length of:  195
 We fetched an array with unique items of:  121
 ```

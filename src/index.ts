@@ -13,16 +13,12 @@ const STORAGE_OBJECT_ID =
 
 interface GetAllDynamicFieldsInternalArgs {
   cursor: null | string;
-  nextPage: boolean;
-  maxLength: number;
   data: DynamicFieldPage['data'];
   parentId: string;
 }
 
 const getAllDynamicFieldsInternal = async ({
   data,
-  nextPage,
-  maxLength,
   cursor,
   parentId,
 }: GetAllDynamicFieldsInternalArgs): Promise<DynamicFieldPage['data']> => {
@@ -35,31 +31,29 @@ const getAllDynamicFieldsInternal = async ({
 
   const nextData = data.concat(newData.data);
 
-  if (!nextPage) return nextData;
+  if (!newData.hasNextPage) return nextData;
 
   return getAllDynamicFieldsInternal({
     data: nextData,
-    nextPage: newData.hasNextPage,
     cursor: newData.nextCursor,
-    maxLength,
     parentId,
   });
 };
 
-const getAllDynamicFields = async (parentId: string, maxLength: number) => {
+const getAllDynamicFields = async (parentId: string) => {
   const data = await provider.getDynamicFields({
     parentId,
   });
 
   console.log('getDynamicFields called');
 
-  return getAllDynamicFieldsInternal({
-    data: data.data,
-    nextPage: data.hasNextPage,
-    cursor: data.nextCursor,
-    maxLength,
-    parentId,
-  });
+  return data.hasNextPage
+    ? getAllDynamicFieldsInternal({
+        data: data.data,
+        cursor: data.nextCursor,
+        parentId,
+      })
+    : data.data;
 };
 
 const getObjectSize = async () => {
@@ -79,7 +73,7 @@ const start = async () => {
 
   console.log('The Pools Bag has a size of: ', size);
 
-  const data = await getAllDynamicFields(id, size);
+  const data = await getAllDynamicFields(id);
 
   console.log('We fetched an array with a length of: ', data.length);
 
